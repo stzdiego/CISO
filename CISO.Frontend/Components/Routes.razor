@@ -1,0 +1,29 @@
+﻿@using System.Reflection
+@using STZ.Frontend.Components
+
+<STZLocalizationProvider>
+    <Router AppAssembly="typeof(Program).Assembly"
+            AdditionalAssemblies="@GetAssembliesWithRazorPages()">
+        <Found Context="routeData">
+            <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
+            <FocusOnNavigate RouteData="routeData" Selector="h1"/>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(Layout.MainLayout)">
+                <p>Página no encontrada</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</STZLocalizationProvider>
+
+@code {
+    private Assembly[] GetAssembliesWithRazorPages()
+    {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        return assemblies
+            .Where(asm => asm.GetTypes().Any(t =>
+                typeof(ComponentBase).IsAssignableFrom(t) &&
+                t.GetCustomAttributes(typeof(RouteAttribute), inherit: true).Any()))
+            .ToArray();
+    }
+}

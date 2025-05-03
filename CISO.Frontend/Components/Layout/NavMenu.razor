@@ -1,0 +1,13 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All"><STZText Key="Menu.Home"/></MudNavLink>
+
+    <MudNavGroup Icon="@Icons.Material.Filled.AdminPanelSettings">
+        <TitleContent>
+            <STZText Key="Menu.Administration" />
+        </TitleContent>
+        <ChildContent>
+            <MudNavLink Href="/cultures" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Cultures"/></MudNavLink>
+            <MudNavLink Href="/resources" Icon="@Icons.Material.Filled.TextFields" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Resources"/></MudNavLink>
+        </ChildContent>
+    </MudNavGroup>
+</MudNavMenu>

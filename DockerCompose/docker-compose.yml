@@ -1,0 +1,18 @@
+services:
+  localization:
+    image: stzdiego/stz.localizationservice:latest
+    environment:
+      ASPNETCORE_URLS: "http://+:80;https://+:443"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/app/certs/shared.pfx" 
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "1234567890"
+      Logging__LogLevel__Default: "Information"
+      Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+      ConnectionStrings__DefaultConnection: "Server=host.docker.internal;Port=5432;Database=STZ.ResourceManager;User Id=postgres;Password=postgres;"
+      AllowedHosts: "*"
+      MigrationAssembly: "STZ.LocalizationService.Backend"
+    ports:
+      - "7111:80"
+      - "7110:443"
+    volumes:
+      - ./certs:/app/certs
