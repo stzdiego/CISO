@@ -24,15 +24,6 @@
       <ProjectReference Include="..\CISO.ManagementService.Frontend\CISO.ManagementService.Frontend.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Components\Pages\Authentication\" />
-    </ItemGroup>
-
     <!--
     <ItemGroup>
       <PackageReference Include="STZ.Frontend" Version="25.5.1.1933" />
