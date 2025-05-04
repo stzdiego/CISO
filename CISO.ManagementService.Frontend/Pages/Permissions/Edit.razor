@@ -1,0 +1,29 @@
+@using CISO.ManagementService.Shared.Entities
+@using MudBlazor
+@using STZ.Frontend.Components
+@using STZ.Frontend.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject LocalizationService Localization
+
+<EditForm Model="@Item" OnValidSubmit="OnSave">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Name")" @bind-Value="@Item.Name" For="@(() => Item.Name)" />
+        </MudItem>
+    </MudGrid>
+    
+    <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">
+        <MudButton OnClick="() => MudDialog.Cancel()"><STZText Key="General.Cancel" /></MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"><STZText Key="General.Update" /></MudButton>
+    </MudStack>
+</EditForm>
+
+@code {
+    [Parameter] public  required Role Item { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    private void OnSave()
+    {
+        MudDialog.Close(DialogResult.Ok(Item));
+    }
+}
