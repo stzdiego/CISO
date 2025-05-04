@@ -1,4 +1,3 @@
-using Auth0.AspNetCore.Authentication;
 using CISO.Frontend.Components;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
