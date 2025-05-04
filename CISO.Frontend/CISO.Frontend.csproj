@@ -16,12 +16,12 @@
     <ItemGroup>
       <None Update="README.md">
         <Pack>true</Pack>
-        <PackagePath></PackagePath>
       </None>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\STZ\STZ.Frontend\STZ.Frontend.csproj" />
+      <ProjectReference Include="..\CISO.ManagementService.Frontend\CISO.ManagementService.Frontend.csproj" />
     </ItemGroup>
 
     <!--
