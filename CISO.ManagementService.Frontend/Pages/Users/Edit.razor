@@ -31,6 +31,11 @@
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.Phone")" @bind-Value="@Item.Phone" InputType="InputType.Number" For="@(() => Item.Phone)" />
         </MudItem>
+        <MudItem xs="12">
+            <MudText Color="@Color.Error">
+                <ValidationSummary/>
+            </MudText>
+        </MudItem>
     </MudGrid>
     
     <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">

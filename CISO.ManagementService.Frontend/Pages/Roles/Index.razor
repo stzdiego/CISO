@@ -1,4 +1,4 @@
-@page "/Features"
+@page "/Roles"
 @using CISO.ManagementService.Shared.Entities
 @using Microsoft.AspNetCore.Components.Web
 @using STZ.Frontend.Components
@@ -6,12 +6,12 @@
 @using MudBlazor
 @inject LocalizationService Localization
 
-<PageTitle><STZText Key="Features.Title" /></PageTitle>
+<PageTitle><STZText Key="Roles.Title" /></PageTitle>
 
-<STZDataGrid TItem="Feature" TId="Guid" Title="Features.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
+<STZDataGrid TItem="Role" TId="Guid" Title="Roles.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
     <Columns>
-        <PropertyColumn T="Feature" TProperty="string" Property="x => x.Name" Title="@Localization.Get("General.Name")" Hideable="true"/>
-        <PropertyColumn T="Feature" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hideable="true"/>
-        <PropertyColumn T="Feature" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true"/>
+        <PropertyColumn T="Role" TProperty="string" Property="x => x.Name" Title="@Localization.Get("General.Name")" Hideable="true"/>
+        <PropertyColumn T="Role" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hideable="true"/>
+        <PropertyColumn T="Role" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true"/>
     </Columns>
 </STZDataGrid>

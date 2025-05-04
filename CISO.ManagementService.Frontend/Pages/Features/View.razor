@@ -8,25 +8,7 @@
 <MudForm ReadOnly>
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Company")" Value="@Item.Company?.Name"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Nid")" Value="@Item.Nid" InputType="InputType.Number"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.FirstName")" Value="@Item.FirstName"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.LastName")" Value="@Item.LastName"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Email")" Value="@Item.Email" InputType="InputType.Email"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Phone")" Value="@Item.Phone" InputType="InputType.Telephone" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Password")" Value="@Item.PasswordHash" InputType="InputType.Password" />
+            <MudTextField T="string" Label="@Localization.Get("General.Name")" Value="@Item.Name" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField T="DateTime" Label="@Localization.Get("General.CreationDate")" Value="@Item.CreatedAt"/>
@@ -42,6 +24,6 @@
 </MudForm>
 
 @code {
-    [Parameter] public required User Item { get; set; }
+    [Parameter] public required Feature Item { get; set; }
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 }

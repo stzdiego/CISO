@@ -1,4 +1,4 @@
-@page "/Roles"
+@page "/Permissions"
 @using CISO.ManagementService.Shared.Entities
 @using Microsoft.AspNetCore.Components.Web
 @using STZ.Frontend.Components
@@ -6,12 +6,14 @@
 @using MudBlazor
 @inject LocalizationService Localization
 
-<PageTitle><STZText Key="Roles.Title" /></PageTitle>
+<PageTitle><STZText Key="Permissions.Title" /></PageTitle>
 
-<STZDataGrid TItem="Role" TId="Guid" Title="Roles.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
+<STZDataGrid TItem="Permission" TId="Guid" Title="Permissions.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
     <Columns>
-        <PropertyColumn T="Role" TProperty="string" Property="x => x.Name" Title="@Localization.Get("General.Name")" Hideable="true"/>
-        <PropertyColumn T="Role" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hideable="true"/>
-        <PropertyColumn T="Role" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true"/>
+        <PropertyColumn T="Permission" TProperty="string" Property="x => x.Role.Name" Title="@Localization.Get("General.Role")" Hideable="true" Grouping="true" Hidden="true" />
+        <PropertyColumn T="Permission" TProperty="string" Property="x => x.Feature.Name" Title="@Localization.Get("General.Feature")" Hideable="true" />
+        <PropertyColumn T="Permission" TProperty="string" Property="x => x.Action.Name" Title="@Localization.Get("General.Action")" Hideable="true" Groupable="false" />
+        <PropertyColumn T="Permission" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hidden="true" Hideable="true" Groupable="false" />
+        <PropertyColumn T="Permission" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true" Groupable="false" />
     </Columns>
 </STZDataGrid>

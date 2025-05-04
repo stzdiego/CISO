@@ -18,7 +18,6 @@ public class ManagementServiceContext : DbContextBase
     public DbSet<Company> Companies { get; set; }
     public DbSet<Feature> Features { get; set; }
     public DbSet<Permission> Permissions { get; set; }
-    public DbSet<PermissionRole> PermissionRoles { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }

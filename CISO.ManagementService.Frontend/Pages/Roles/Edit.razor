@@ -19,7 +19,7 @@
 </EditForm>
 
 @code {
-    [Parameter] public  required Feature Item { get; set; }
+    [Parameter] public  required Role Item { get; set; }
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
     
     private void OnSave()

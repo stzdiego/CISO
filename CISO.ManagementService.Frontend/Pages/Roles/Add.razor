@@ -30,7 +30,7 @@
 </EditForm>
 
 @code {
-    [Parameter] public Feature Item { get; set; } = new();
+    [Parameter] public Role Item { get; set; } = new();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     private void OnSave()

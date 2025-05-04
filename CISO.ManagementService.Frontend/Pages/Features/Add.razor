@@ -9,30 +9,8 @@
     <DataAnnotationsValidator/>
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <STZEntityField TItem="Company" Label="General.Company" PropertyName="Name"
-                            @bind-SelectedItem="_selectedCompany"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Nid")" @bind-Value="@Item.Nid"
-                          InputType="InputType.Number" For="@(() => Item.Nid)"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.FirstName")" @bind-Value="@Item.FirstName" For="@(() => Item.FirstName)" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.LastName")" @bind-Value="@Item.LastName" For="@(() => Item.LastName)" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Email")" @bind-Value="@Item.Email"
-                          InputType="InputType.Email" For="@(() => Item.Email)"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Phone")" @bind-Value="@Item.Phone"
-                          InputType="InputType.Number" For="@(() => Item.Phone)"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Password")" @bind-Value="@Item.PasswordHash"
-                          InputType="InputType.Password" For="@(() => Item.PasswordHash)"/>
+            <MudTextField T="string" Label="@Localization.Get("General.Name")" @bind-Value="@Item.Name"
+                          For="@(() => Item.Name)"/>
         </MudItem>
         <MudItem xs="12">
             <MudText Color="@Color.Error">
@@ -52,19 +30,11 @@
 </EditForm>
 
 @code {
-    [Parameter] public User Item { get; set; } = new();
+    [Parameter] public Feature Item { get; set; } = new();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-
-    private Company? _selectedCompany;
 
     private void OnSave()
     {
-        if (_selectedCompany is null)
-        {
-            return;
-        }
-
-        Item.CompanyId = _selectedCompany.Id;
         MudDialog.Close(DialogResult.Ok(Item));
     }
 }

@@ -3,14 +3,22 @@
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using Microsoft.AspNetCore.Components.Forms
-@inject LocalizationService Localization
+@using Action = CISO.ManagementService.Shared.Entities.Action
 
 <EditForm Model="@Item" OnValidSubmit="OnSave">
     <DataAnnotationsValidator/>
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Name")" @bind-Value="@Item.Name"
-                          For="@(() => Item.Name)"/>
+            <STZEntityField TItem="Role" Label="General.Role" PropertyName="Name"
+                            @bind-SelectedItem="_selectedRole" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <STZEntityField TItem="Feature" Label="General.Role" PropertyName="Name"
+                            @bind-SelectedItem="_selectedFeature" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <STZEntityField TItem="Action" Label="General.Role" PropertyName="Name"
+                            @bind-SelectedItem="_selectedAction" />
         </MudItem>
         <MudItem xs="12">
             <MudText Color="@Color.Error">
@@ -30,11 +38,24 @@
 </EditForm>
 
 @code {
-    [Parameter] public Role Item { get; set; } = new();
+    [Parameter] public Permission Item { get; set; } = new();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private Role? _selectedRole;
+    private Feature? _selectedFeature;
+    private Action? _selectedAction;
 
     private void OnSave()
     {
+        if (_selectedRole is null || _selectedFeature is null || _selectedAction is null)
+        {
+            return;
+        }
+        
+        Item.RoleId = _selectedRole.Id;
+        Item.FeatureId = _selectedFeature.Id;
+        Item.ActionId = _selectedAction.Id;
+        
         MudDialog.Close(DialogResult.Ok(Item));
     }
 }

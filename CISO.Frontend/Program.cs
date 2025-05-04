@@ -1,12 +1,19 @@
+using Auth0.AspNetCore.Authentication;
 using CISO.Frontend.Components;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
 using STZ.Frontend.Configuration;
 using STZ.Frontend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// STZ Framework
 builder.Services.AddSTZFrontendServices(builder.Configuration);
 builder.Services.AddMudServices();
+
+// Auth0
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -20,6 +27,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 app.MapStaticAssets();
 

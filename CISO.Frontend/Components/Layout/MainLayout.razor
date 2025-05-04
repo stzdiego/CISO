@@ -6,6 +6,7 @@
 @inject ServiceBase<Culture> CultureService
 @inject LocalizationService LocalizationService
 @inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="@Theme.ResourcesTheme" />
 <MudPopoverProvider/>
@@ -31,7 +32,7 @@
                     </MudSelectItem>
                 }
             </MudSelect>
-            <MudButton>
+            <MudButton OnClick="Login">
                 <STZText Key="App.Login" />
             </MudButton>
         </MudStack>
@@ -84,4 +85,13 @@
         await JSRuntime.InvokeVoidAsync("localStorage.setItem", "selectedCultureId", id.ToString());
     }
 
+    private void Login()
+    {
+        Navigation.NavigateTo("authentication/login", forceLoad: true);
+    }
+
+    private void Logout()
+    {
+        Navigation.NavigateTo("authentication/logout");
+    }
 }
