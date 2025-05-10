@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using STZ.Shared.Bases;
+using STZ.Shared.Entities;
 
 namespace CISO.ManagementService.Shared.Entities;
 

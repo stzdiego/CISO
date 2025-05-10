@@ -4,15 +4,15 @@
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using MudBlazor
+@using STZ.Shared.Entities
 @inject LocalizationService Localization
 
-<PageTitle><STZText Key="Users.Title" /></PageTitle>
+<PageTitle>@Localization.Get("Users.Title")</PageTitle>
 
-<STZDataGrid TItem="User" TId="Guid" Title="Users.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
+<STZDataGrid TItem="User" TId="Guid" Title="Users.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" >
     <Columns>
-        <PropertyColumn T="User" TProperty="string" Property="x => x.Nid" Title="@Localization.Get("General.Nid")" Hideable="true"/>
-        <PropertyColumn T="User" TProperty="string" Property="x => x.FirstName" Title="@Localization.Get("General.FirstName")" Hideable="true"/>
-        <PropertyColumn T="User" TProperty="string" Property="x => x.LastName" Title="@Localization.Get("General.LastName")" Hidden="true" Hideable="true"/>
+        <PropertyColumn T="User" TProperty="string" Property="x => x.Nid ?? string.Empty" Title="@Localization.Get("General.Nid")" Hideable="true"/>
+        <PropertyColumn T="User" TProperty="string" Property="x => x.FullName" Title="@Localization.Get("General.Name")" Hideable="true"/>
         <PropertyColumn T="User" TProperty="string" Property="x => x.Email" Title="@Localization.Get("General.Email")" Hidden="true" Hideable="true"/>
         <PropertyColumn T="User" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hideable="true"/>
         <PropertyColumn T="User" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true"/>

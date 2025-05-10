@@ -3,6 +3,7 @@
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using Microsoft.AspNetCore.Components.Forms
+@using STZ.Shared.Entities
 @inject LocalizationService Localization
 
 <EditForm Model="@Item" OnValidSubmit="OnSave">
@@ -14,7 +15,7 @@
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.Nid")" @bind-Value="@Item.Nid"
-                          InputType="InputType.Number" For="@(() => Item.Nid)"/>
+                          InputType="InputType.Number" For="@(() => Item.Nid ?? string.Empty)"/>
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.FirstName")" @bind-Value="@Item.FirstName" For="@(() => Item.FirstName)" />
@@ -28,11 +29,7 @@
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.Phone")" @bind-Value="@Item.Phone"
-                          InputType="InputType.Number" For="@(() => Item.Phone)"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Password")" @bind-Value="@Item.PasswordHash"
-                          InputType="InputType.Password" For="@(() => Item.PasswordHash)"/>
+                          InputType="InputType.Number" For="@(() => Item.Phone ?? string.Empty)"/>
         </MudItem>
         <MudItem xs="12">
             <MudText Color="@Color.Error">

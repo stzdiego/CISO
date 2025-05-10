@@ -24,6 +24,11 @@
       <ProjectReference Include="..\CISO.ManagementService.Frontend\CISO.ManagementService.Frontend.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.4.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
+    </ItemGroup>
+
     <!--
     <ItemGroup>
       <PackageReference Include="STZ.Frontend" Version="25.5.1.1933" />

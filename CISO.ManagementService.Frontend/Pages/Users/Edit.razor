@@ -3,6 +3,7 @@
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using Microsoft.AspNetCore.Components.Forms
+@using STZ.Shared.Entities
 @inject LocalizationService Localization
 
 <EditForm Model="@Item" OnValidSubmit="OnSave">
@@ -11,7 +12,8 @@
             <STZEntityField TItem="Company" Label="General.Company" PropertyName="Name" @bind-SelectedItem="_selectedCompany" />
         </MudItem>
         <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Nid")" @bind-Value="@Item.Nid" InputType="InputType.Number" For="@(() => Item.Nid)" />
+            <MudTextField T="string" Label="@Localization.Get("General.Nid")" @bind-Value="@Item.Nid" 
+                          InputType="InputType.Number" For="@(() => Item.Nid ?? string.Empty)" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.FirstName")" @bind-Value="@Item.FirstName" For="@(() => Item.FirstName)" />
@@ -23,13 +25,7 @@
             <MudTextField T="string" Label="@Localization.Get("General.Email")" @bind-Value="@Item.Email" InputType="InputType.Email" For="@(() => Item.Email)" />
         </MudItem>
         <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Phone")" @bind-Value="@Item.Phone" InputType="InputType.Number" For="@(() => Item.Phone)" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Password")" @bind-Value="@Item.PasswordHash" InputType="InputType.Password" For="@(() => Item.PasswordHash)" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Phone")" @bind-Value="@Item.Phone" InputType="InputType.Number" For="@(() => Item.Phone)" />
+            <MudTextField T="string" Label="@Localization.Get("General.Phone")" @bind-Value="@Item.Phone" InputType="InputType.Number" For="@(() => Item.Phone ?? string.Empty)" />
         </MudItem>
         <MudItem xs="12">
             <MudText Color="@Color.Error">

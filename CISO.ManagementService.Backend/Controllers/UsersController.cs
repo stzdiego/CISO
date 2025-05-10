@@ -1,6 +1,7 @@
 using CISO.ManagementService.Access.DbContext;
 using CISO.ManagementService.Shared.Entities;
 using STZ.Shared.Bases;
+using STZ.Shared.Entities;
 
 namespace CISO.ManagementService.Backend.Controllers;
 

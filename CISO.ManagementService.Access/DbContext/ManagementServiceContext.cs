@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using STZ.Shared.Bases;
 using CISO.ManagementService.Shared.Entities;
+using STZ.Shared.Entities;
 using Action = CISO.ManagementService.Shared.Entities.Action;
 
 namespace CISO.ManagementService.Access.DbContext;

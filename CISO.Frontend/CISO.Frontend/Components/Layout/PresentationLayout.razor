@@ -1,0 +1,124 @@
+@using CISO.Frontend.Theme
+@using STZ.Frontend.Services
+@using STZ.Shared.Bases
+@using STZ.Shared.Entities
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject ServiceBase<Culture> CultureService
+@inject LocalizationService Localization
+
+<MudThemeProvider Theme="@Theme.ResourcesTheme"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout Class="full-height">
+    <MudAppBar Elevation="1">
+        <STZAuthorizeView>
+            <MudButton OnClick="GoDashboard"
+                       Style="color: white; border-color: white"
+                       Variant="Variant.Outlined">
+                <STZText Key="General.Dashboard"/>
+            </MudButton>
+        </STZAuthorizeView>
+        <MudSpacer/>
+        <STZAuthorizeView>
+            <Authorized>
+                <MudButton OnClick="GoLogout"
+                           Style="color: white; border-color: white"
+                           Variant="Variant.Outlined">
+                    <STZText Key="App.Logout"/>
+                </MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton OnClick="GoLogin"
+                           Style="color: white; border-color: white"
+                           Variant="Variant.Outlined">
+                    <STZText Key="App.Login"/>
+                </MudButton>
+            </NotAuthorized>
+        </STZAuthorizeView>
+    </MudAppBar>
+
+    <MudMainContent Class="content">
+        <MudContainer MaxWidth="MaxWidth.Large">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+
+    <div class="footer">
+        <MudContainer>
+            <MudGrid>
+                <MudItem sm="6">
+                    <MudText Typo="Typo.caption">
+                        <p>
+                            <STZText Key="General.Cultures"/>
+                        </p>
+                    </MudText>
+                    <MudStack Spacing="0">
+                        @foreach (var culture in _cultures)
+                        {
+                            <MudLink Typo="Typo.body2" OnClick="@(() => ChangeCulture(culture.Id))">@culture.Name</MudLink>
+                        }
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                <STZText Key="App.Footer.Text"/>
+            </MudText>
+        </MudContainer>
+    </div>
+</MudLayout>
+
+<style>
+    .full-height {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .content {
+        flex: 1;
+    }
+
+    .footer {
+        background-color: lightgray;
+        margin-top: auto;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+</style>
+
+@code
+{
+    private List<Culture> _cultures = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cultures = await CultureService.GetAllAsync();
+    }
+
+    private void GoLogin()
+    {
+        Navigation.NavigateTo($"/authentication/login?redirectUri=/dashboard", forceLoad: true);
+    }
+    
+    private void GoLogout()
+    {
+        Navigation.NavigateTo("/authentication/logout", forceLoad: true);
+    }
+    
+    private void GoDashboard()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+
+    private async Task ChangeCulture(Guid cultureId)
+    {
+        var culture = _cultures.FirstOrDefault(c => c.Id == cultureId);
+        if (culture != null)
+        {
+            await Localization.SetCultureAsync(cultureId);
+        }
+    }
+}

@@ -1,0 +1,121 @@
+@using STZ.Frontend.Services
+@using STZ.Shared.Bases
+@using STZ.Shared.Entities
+@inject LocalizationService Localization
+@inject ServiceBase<Culture> CultureService
+@inject IJSRuntime JsRuntime
+
+<div>
+    <MudNavMenu Bordered="true">
+        @if (IsOpen)
+        {
+            <MudText Typo="Typo.h6" Class="px-4"><STZText Key="App.Name"/></MudText>
+            <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">App.Description</MudText>
+            <MudDivider Class="my-2"/>
+        }
+        
+        <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All"><STZText Key="Menu.Home"/></MudNavLink>
+
+        <MudNavGroup Icon="@Icons.Material.Filled.ManageAccounts">
+            <TitleContent>
+                <STZText Key="Menu.OrganizationalManagement"/>
+            </TitleContent>
+            <ChildContent>
+                <MudNavLink Href="/companies" Icon="@Icons.Material.Filled.Apartment" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Companies"/></MudNavLink>
+                <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Group" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Users"/></MudNavLink>
+                <MudNavLink Href="/userroles" Icon="@Icons.Material.Filled.Diversity3" Match="NavLinkMatch.Prefix"><STZText Key="Menu.UserRoles"/></MudNavLink>
+            </ChildContent>
+        </MudNavGroup>
+
+        <MudNavGroup Icon="@Icons.Material.Filled.AdminPanelSettings">
+            <TitleContent>
+                <STZText Key="Menu.Administration"/>
+            </TitleContent>
+            <ChildContent>
+                <MudNavGroup Icon="@Icons.Material.Filled.Security">
+                    <TitleContent>
+                        <STZText Key="Menu.Authorization"/>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudNavLink Href="/actions" Icon="@Icons.Material.Filled.CallToAction" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Actions"/></MudNavLink>
+                        <MudNavLink Href="/features" Icon="@Icons.Material.Filled.Menu" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Features"/></MudNavLink>
+                        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.Badge" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Roles"/></MudNavLink>
+                        <MudNavLink Href="/permissions" Icon="@Icons.Material.Filled.Key" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Permisions"/></MudNavLink>
+                    </ChildContent>
+                </MudNavGroup>
+
+                <MudNavGroup Icon="@Icons.Material.Filled.List">
+                    <TitleContent>
+                        <STZText Key="Menu.Resources"/>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudNavLink Href="/cultures" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Cultures"/></MudNavLink>
+                        <MudNavLink Href="/resources" Icon="@Icons.Material.Filled.TextFields" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Resources"/></MudNavLink>
+                    </ChildContent>
+                </MudNavGroup>
+            </ChildContent>
+        </MudNavGroup>
+    </MudNavMenu>
+
+    @if (IsOpen)
+    {
+        <div class="navmenu-footer">
+            <MudSelect T="Guid"
+                       Variant="Variant.Outlined"
+                       Dense="true"
+                       ValueChanged="ChangeCulture"
+                       Value="_currentCultureId"
+                       Label="@Localization.Get("General.Culture")">
+                @foreach (var culture in _cultures)
+                {
+                    <MudSelectItem T="Guid" Value="culture.Id">
+                        @culture.Name
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    
+    private List<Culture> _cultures = [];
+    private Guid _currentCultureId;
+    private bool _isInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cultures = await CultureService.GetAllAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isInitialized)
+        {
+            _currentCultureId = await GetCultureFromStorageAsync();
+            await Localization.SetCultureAsync(_currentCultureId); // Establece la cultura al cargar
+            _isInitialized = true;
+            StateHasChanged(); // Forzar renderizado después de establecer la cultura
+        }
+    }
+
+    private async Task ChangeCulture(Guid id)
+    {
+        _currentCultureId = id;
+        await Localization.SetCultureAsync(id);
+        await SaveCultureInStorage(id);
+        StateHasChanged();
+    }
+
+    private async Task<Guid> GetCultureFromStorageAsync()
+    {
+        var saved = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "selectedCultureId");
+        return Guid.TryParse(saved, out var cultureId) ? cultureId : Guid.Empty;
+    }
+
+    private async Task SaveCultureInStorage(Guid id)
+    {
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "selectedCultureId", id.ToString());
+    }
+}

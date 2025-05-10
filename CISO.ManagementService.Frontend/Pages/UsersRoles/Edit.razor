@@ -1,0 +1,61 @@
+@using CISO.ManagementService.Shared.Entities
+@using MudBlazor
+@using STZ.Frontend.Components
+@using STZ.Frontend.Services
+@using Microsoft.AspNetCore.Components.Forms
+@using STZ.Shared.Entities
+@using Action = CISO.ManagementService.Shared.Entities.Action
+@inject LocalizationService Localization
+
+<EditForm Model="@Item" OnValidSubmit="OnSave">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <STZEntityField TItem="User" Label="General.Role" PropertyName="Email"
+                            @bind-SelectedItem="_selectedUser" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <STZEntityField TItem="Role" Label="General.Role" PropertyName="Name"
+                            @bind-SelectedItem="_selectedRole" />
+        </MudItem>
+        
+        <MudItem xs="12">
+            <MudText Color="@Color.Error">
+                <ValidationSummary/>
+            </MudText>
+        </MudItem>
+    </MudGrid>
+    
+    <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">
+        <MudButton OnClick="() => MudDialog.Cancel()"><STZText Key="General.Cancel" /></MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"><STZText Key="General.Update" /></MudButton>
+    </MudStack>
+</EditForm>
+
+@code {
+    [Parameter] public  required UserRole Item { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    
+    private Role? _selectedRole;
+    private User? _selectedUser;
+
+    protected override void OnInitialized()
+    {
+        _selectedRole = Item.Role;
+        _selectedUser = Item.User;
+        
+        base.OnInitialized();
+    }
+
+    private void OnSave()
+    {
+        if (_selectedRole is null || _selectedUser is null)
+        {
+            return;
+        }
+        
+        Item.RoleId = _selectedRole.Id;
+        Item.UserId = _selectedUser.Id;
+        
+        MudDialog.Close(DialogResult.Ok(Item));
+    }
+}
