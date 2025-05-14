@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\STZ\STZ.Backend\STZ.Backend.csproj" />
       <ProjectReference Include="..\CISO.ManagementService.Access\CISO.ManagementService.Access.csproj" />
     </ItemGroup>
 

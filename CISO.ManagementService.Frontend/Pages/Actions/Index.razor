@@ -1,18 +1,20 @@
 @page "/Actions"
+@attribute [STZAuthorize("Actions")]
 @using Microsoft.AspNetCore.Components.Web
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using Action = CISO.ManagementService.Shared.Entities.Action
 @using MudBlazor
+@using STZ.Frontend.Authorization
 @inject LocalizationService Localization
 
 <PageTitle><STZText Key="Actions.Title" /></PageTitle>
 
-<STZDataGrid TItem="Action" TId="Guid" Title="Actions.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
+<STZDataGrid TItem="Action" TId="Guid" Feature="Actions" Title="Actions.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
     <Columns>
-        <PropertyColumn T="Action" TProperty="string" Property="x => x.Name" Title="@Localization.Get("General.Name")" Hideable="true"/>
-        <PropertyColumn T="Action" TProperty="Guid" Property="x => x.Id" Title="@Localization.Get("General.Id")" Hidden="true" Hideable="true"/>
-        <PropertyColumn T="Action" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hideable="true"/>
-        <PropertyColumn T="Action" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true"/>
+        <STZColumn T="Action" TProperty="string" Property="x => x.Name" Title="General.Name" Hideable="true"/>
+        <STZColumn T="Action" TProperty="Guid" Property="x => x.Id" Title="General.Id" Hidden="true" Hideable="true"/>
+        <STZColumn T="Action" TProperty="DateTime" Property="x => x.CreatedAt" Title="General.CreationDate" Hideable="true"/>
+        <STZColumn T="Action" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="General.UpdateDate" Hidden="true" Hideable="true"/>
     </Columns>
 </STZDataGrid>

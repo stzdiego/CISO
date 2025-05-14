@@ -40,6 +40,8 @@ public class PermissionService : IPermissionService
         var userEntity = userResponse.FirstOrDefault();
         if (userEntity == null) return false;
         
+        if (userEntity.IsAdmin) return true;
+        
         var actionFilter = $"Name = \"{action}\"";
         var actionResponse = await _actionService.FindAsync(actionFilter);
         var actionEntity = actionResponse.FirstOrDefault();
@@ -62,6 +64,6 @@ public class PermissionService : IPermissionService
         if (!permissions.Any()) return false;
         if (permissions.Any(x => x.ActionId == actionEntity.Id)) return true;
         
-        return permissions.Any();
+        return false;
     }
 }

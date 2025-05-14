@@ -1,20 +1,21 @@
 ﻿@using static STZ.Frontend.Configuration.RazorAssemblyConfiguration
 @using Microsoft.AspNetCore.Components.Authorization
+@using CISO.Frontend.Components.Pages
 
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="@GetAssembliesWithRazorPages()">
         <Found Context="routeData">
             <STZRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <Authorizing>
-                    <p><STZText Key="Login.Authorizing" /></p>
+                    <STZLoader Text="Login.Authorizing" Visible="true" />
                 </Authorizing>
                 <NotAuthorized>
-                    <RedirectToLoginIfNotAuthenticated/>
+                    <RedirectToLoginIfNotAuthenticated Layout="typeof(PresentationLayout)"/>
                 </NotAuthorized>
             </STZRouteView>
         </Found>
         <NotFound>
-            <p>Página no encontrada.</p>
+            <PageNotFound Layout="typeof(PresentationLayout)" />
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

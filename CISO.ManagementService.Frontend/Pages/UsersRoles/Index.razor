@@ -1,18 +1,20 @@
 @page "/UserRoles"
+@attribute [STZAuthorize("UserRoles")]
 @using CISO.ManagementService.Shared.Entities
 @using Microsoft.AspNetCore.Components.Web
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using MudBlazor
+@using STZ.Frontend.Authorization
 @inject LocalizationService Localization
 
 <PageTitle><STZText Key="UserRoles.Title" /></PageTitle>
 
 <STZDataGrid TItem="UserRole" TId="Guid" Title="UserRoles.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
     <Columns>
-        <PropertyColumn T="UserRole" TProperty="string" Property="x => x.User!.Email" Title="@Localization.Get("General.User")" Hideable="true" Grouping="true" Hidden="true" />
-        <PropertyColumn T="UserRole" TProperty="string" Property="x => x.Role!.Name" Title="@Localization.Get("General.Role")" Hideable="true" />
-        <PropertyColumn T="UserRole" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hidden="true" Hideable="true" Groupable="false" />
-        <PropertyColumn T="UserRole" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true" Groupable="false" />
+        <STZColumn T="UserRole" TProperty="string" Property="x => x.User!.Email" Title="General.User" Hideable="true" Grouping="true" Hidden="true" />
+        <STZColumn T="UserRole" TProperty="string" Property="x => x.Role!.Name" Title="General.Role" Hideable="true" />
+        <STZColumn T="UserRole" TProperty="DateTime" Property="x => x.CreatedAt" Title="General.CreationDate" Hidden="true" Hideable="true" Groupable="false" />
+        <STZColumn T="UserRole" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="General.UpdateDate" Hidden="true" Hideable="true" Groupable="false" />
     </Columns>
 </STZDataGrid>

@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject ServiceBase<Culture> CultureService
 @inject LocalizationService Localization
+@inject IJSRuntime JsRuntime
 
 <MudThemeProvider Theme="@Theme.ResourcesTheme"/>
 <MudPopoverProvider/>
@@ -58,7 +59,8 @@
                     <MudStack Spacing="0">
                         @foreach (var culture in _cultures)
                         {
-                            <MudLink Typo="Typo.body2" OnClick="@(() => ChangeCulture(culture.Id))">@culture.Name</MudLink>
+                            <MudLink Typo="Typo.body2"
+                                     OnClick="@(() => ChangeCulture(culture.Id))">@culture.Name</MudLink>
                         }
                     </MudStack>
                 </MudItem>
@@ -92,22 +94,42 @@
 @code
 {
     private List<Culture> _cultures = [];
+    private Guid _currentCultureId;
+    private bool _isInitialized = false;
 
     protected override async Task OnInitializedAsync()
     {
         _cultures = await CultureService.GetAllAsync();
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isInitialized)
+        {
+            _currentCultureId = await GetCultureFromStorageAsync();
+            
+            if (_currentCultureId == Guid.Empty && _cultures.Any())
+            {
+                _currentCultureId = _cultures.First().Id;
+                await SaveCultureInStorage(_currentCultureId);
+            }
+            
+            await Localization.SetCultureAsync(_currentCultureId);
+            _isInitialized = true;
+            StateHasChanged(); // Forzar renderizado después de establecer la cultura
+        }
     }
 
     private void GoLogin()
     {
         Navigation.NavigateTo($"/authentication/login?redirectUri=/dashboard", forceLoad: true);
     }
-    
+
     private void GoLogout()
     {
         Navigation.NavigateTo("/authentication/logout", forceLoad: true);
     }
-    
+
     private void GoDashboard()
     {
         Navigation.NavigateTo("/dashboard");
@@ -118,7 +140,20 @@
         var culture = _cultures.FirstOrDefault(c => c.Id == cultureId);
         if (culture != null)
         {
+            _currentCultureId = cultureId;
             await Localization.SetCultureAsync(cultureId);
+            await SaveCultureInStorage(cultureId);
         }
+    }
+
+    private async Task<Guid> GetCultureFromStorageAsync()
+    {
+        var saved = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "selectedCultureId");
+        return Guid.TryParse(saved, out var cultureId) ? cultureId : Guid.Empty;
+    }
+
+    private async Task SaveCultureInStorage(Guid cultureId)
+    {
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "selectedCultureId", cultureId.ToString());
     }
 }

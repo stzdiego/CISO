@@ -1,9 +1,10 @@
 @page "/Companies"
-@using CISO.ManagementService.Shared.Entities
+@attribute [STZAuthorize("Companies")]
 @using Microsoft.AspNetCore.Components.Web
 @using STZ.Frontend.Components
 @using STZ.Frontend.Services
 @using MudBlazor
+@using STZ.Frontend.Authorization
 @using STZ.Shared.Entities
 @inject LocalizationService Localization
 
@@ -11,9 +12,9 @@
 
 <STZDataGrid TItem="Company" TId="Guid" Title="Companies.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
     <Columns>
-        <PropertyColumn T="Company" TProperty="string" Property="x => x.Name" Title="@Localization.Get("General.Name")" Hideable="true"/>
-        <PropertyColumn T="Company" TProperty="string" Property="x => x.Nit" Title="@Localization.Get("General.Nit")" Hidden="true" Hideable="true"/>
-        <PropertyColumn T="Company" TProperty="DateTime" Property="x => x.CreatedAt" Title="@Localization.Get("General.CreationDate")" Hideable="true"/>
-        <PropertyColumn T="Company" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="@Localization.Get("General.UpdateDate")" Hidden="true" Hideable="true"/>
+        <STZColumn T="Company" TProperty="string" Property="x => x.Name" Title="General.Name" Hideable="true"/>
+        <STZColumn T="Company" TProperty="string" Property="x => x.Nit" Title="General.Nit" Hidden="true" Hideable="true"/>
+        <STZColumn T="Company" TProperty="DateTime" Property="x => x.CreatedAt" Title="General.CreationDate" Hideable="true"/>
+        <STZColumn T="Company" TProperty="DateTime?" Property="x => x.UpdatedAt" Title="General.UpdateDate" Hidden="true" Hideable="true"/>
     </Columns>
 </STZDataGrid>
