@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CISO.EvidenceService.Shared.Enums;
 using STZ.Shared.Bases;
 
 namespace CISO.EvidenceService.Shared.Entities;
@@ -6,14 +7,16 @@ namespace CISO.EvidenceService.Shared.Entities;
 public class Attachment : AuditBase<Guid>
 {
     [Required]
-    public string Name { get; set; }
+    [StringLength(250)]
+    public string Name { get; set; } = null!;
     
     [Required]
-    public string Url { get; set; }
+    [StringLength(2000)]
+    public string Url { get; set; } = null!;
     
     [Required]
-    public string Type { get; set; }
+    public FileTypeEnum Type { get; set; }
     
     [Required]
-    public int SizeKb { get; set; }
+    public long Size { get; set; }
 }

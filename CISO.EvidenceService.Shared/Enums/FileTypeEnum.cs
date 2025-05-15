@@ -1,8 +1,9 @@
 namespace CISO.EvidenceService.Shared.Enums;
 
-public enum FileType
+public enum FileTypeEnum
 {
     Document,
+    Datasheet,
     Image,
     Video,
     Audio,
@@ -10,5 +11,6 @@ public enum FileType
     Executable,
     Pdf,
     Presentation,
+    Text,
     Other
 }
