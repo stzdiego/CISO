@@ -1,0 +1,17 @@
+@page "/Audit/Languages"
+@attribute [STZAuthorize("Language")]
+@using Microsoft.AspNetCore.Components.Web
+@using STZ.Frontend.Components
+@using STZ.Frontend.Services
+@using MudBlazor
+@using STZ.Frontend.Authorization
+@inject LocalizationService Localization
+
+<PageTitle><STZText Key="Language.Title" /></PageTitle>
+
+<STZDataGrid TItem="Language" TId="Guid" Feature="Language" Title="Language.Title" DetailComponentType="typeof(View)" EditComponentType="typeof(Edit)" AddComponentType="typeof(Add)" >
+    <Columns>
+        <STZColumn T="Language" TProperty="string" Property="x => x.Code" Title="General.Code" Hideable="true"/>
+        <STZColumn T="Language" TProperty="string" Property="x => x.Name" Title="General.Name" Hideable="true"/>
+    </Columns>
+</STZDataGrid>

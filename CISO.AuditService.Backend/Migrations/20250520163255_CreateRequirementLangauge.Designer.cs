@@ -3,6 +3,7 @@ using System;
 using CISO.AuditService.Access.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CISO.AuditService.Backend.Migrations
 {
     [DbContext(typeof(AuditServiceContext))]
-    partial class AuditServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20250520163255_CreateRequirementLangauge")]
+    partial class CreateRequirementLangauge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,19 +372,11 @@ namespace CISO.AuditService.Backend.Migrations
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Html")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("LanguageId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Markdown")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<Guid>("RequirementId")
                         .HasColumnType("uuid");

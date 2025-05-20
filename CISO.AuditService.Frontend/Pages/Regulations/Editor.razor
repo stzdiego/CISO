@@ -1,0 +1,32 @@
+@page "/Audit/Editor"
+@attribute [STZAuthorize("AuditEditor")]
+@using STZ.Frontend.Components
+@using STZ.Frontend.Authorization
+@using STZ.Frontend.Services
+@inject LocalizationService Localization
+
+<PageTitle>@Localization.Get("Audit.Editor")</PageTitle>
+<STZToolbarTitle Title="Audit.Editor"  />
+
+<MudPaper Class="px-4 py-6 mt-4">
+    <STZEntityField TItem="Regulation" AddComponentType="@typeof(Add)" PropertyName="Name" DeleteButton="true"
+                    Label="General.Regulation" SelectedItemChanged="OnChangeRegulation" />
+    
+    @if (_regulation is not null)
+    {
+        <MudStack Class="mt-4">
+            <RegulationComponent Regulation="_regulation" ReadOnly="false" />
+        </MudStack>
+    }
+</MudPaper>
+
+@code {
+    private Regulation? _regulation;
+    
+    private async Task OnChangeRegulation(Regulation regulation)
+    {
+        _regulation = regulation;
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

@@ -6,13 +6,13 @@ using STZ.Shared.Bases;
 
 namespace CISO.AuditService.Backend.Controllers;
 
-public class RequerimentsController : StzControllerBase<Requeriment>
+public class RequirementsController : StzControllerBase<Requirement>
 {
-    private readonly ILogger<RequerimentsController> _logger;
+    private readonly ILogger<RequirementsController> _logger;
     private readonly AuditServiceContext _context;
     private readonly ServiceBase<Attachment> _attachmentService;
 
-    public RequerimentsController(ILogger<RequerimentsController> logger, AuditServiceContext context,
+    public RequirementsController(ILogger<RequirementsController> logger, AuditServiceContext context,
         ServiceBase<Attachment> attachmentService) : base(logger, context)
     {
         _logger = logger;

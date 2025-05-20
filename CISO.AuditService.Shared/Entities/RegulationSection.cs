@@ -15,12 +15,6 @@ public class RegulationSection : AuditBase<Guid>
     public string Title { get; set; }
     
     [Required]
-    public string ContentMD { get; set; }
-    
-    [Required] 
-    public string ContentHTML { get; set; }
-    
-    [Required]
     public Guid IdRegulation { get; set; }
     
     [ForeignKey(nameof(IdRegulation))]

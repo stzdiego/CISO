@@ -4,7 +4,7 @@ using STZ.Shared.Bases;
 
 namespace CISO.AuditService.Shared.Entities;
 
-public class Requeriment : AuditBase<Guid>
+public class Requirement : AuditBase<Guid>
 {
     [Required]
     [StringLength(10)]
@@ -14,14 +14,7 @@ public class Requeriment : AuditBase<Guid>
     [StringLength(20)]
     public string Title { get; set; } = null!;
     
-    [Required]
     public string? Description { get; set; }
-    
-    [Required]
-    public string ContentMD { get; set; }
-    
-    [Required] 
-    public string ContentHTML { get; set; }
     
     [Required]
     public bool IsMandatory { get; set; } = true;

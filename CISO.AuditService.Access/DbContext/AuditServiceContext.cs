@@ -16,8 +16,10 @@ public class AuditServiceContext : DbContextBase
     public DbSet<Regulation> Regulations { get; set; }
     public DbSet<RegulationSection> RegulationSections { get; set; }
     public DbSet<RegulationAttachment> RegulationAttachments { get; set; }
-    public DbSet<Requeriment> Requeriments { get; set; }
-    public DbSet<RequerimentAttachment> RequerimentAttachments { get; set; }
+    public DbSet<Requirement> Requirements { get; set; }
+    public DbSet<RequirementAttachment> RequirementAttachments { get; set; }
+    public DbSet<Language> Languages { get; set; }
+    public DbSet<RequirementLanguage> RequirementLanguages { get; set; }
     
     public AuditServiceContext(IConfiguration configuration, ILogger<AuditServiceContext> logger, IHttpContextAccessor? httpContextAccessor = null) : base(configuration)
     {

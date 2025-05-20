@@ -1,0 +1,70 @@
+@using CISO.AuditService.Shared.Entities
+@using CISO.AuditService.Shared.Enums
+@using MudBlazor
+@using STZ.Frontend.Components
+@using STZ.Frontend.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject LocalizationService Localization
+
+<EditForm Model="Item" OnValidSubmit="OnSave">
+    <DataAnnotationsValidator />
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Code")" @bind-Value="@Item.Code"
+                          For="@(() => Item.Code)"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Name")" @bind-Value="@Item.Name"
+                          For="@(() => Item.Name)"/>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField T="string" Label="@Localization.Get("General.Description")" @bind-Value="@Item.Description"
+                          For="@(() => Item.Description)" Lines="4" Variant="Variant.Outlined"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.VersionRegulation")" @bind-Value="@Item.VersionRegulation"
+                          For="@(() => Item.VersionRegulation)"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker Label="@Localization.Get("General.PublicationDate")" @bind-Date="@Item.PublicationDate"
+                           For="@(() => Item.PublicationDate)" Mask="@(new DateMask("0000-00-00"))" DateFormat="yyyy-MM-dd" Editable />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="RegulationStatusEnum" Label="@Localization.Get("General.Status")" @bind-Value="@Item.Status"
+                       For="@(() => Item.Status)" Disabled />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.IssuingBody")" @bind-Value="@Item.IssuingBody"
+                          For="@(() => Item.IssuingBody)"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Scope")" @bind-Value="@Item.Scope"
+                          For="@(() => Item.Scope)"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Category")" @bind-Value="@Item.Category"
+                          For="@(() => Item.Category)"/>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Color="@Color.Error">
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">
+        <MudButton OnClick="() => MudDialog.Cancel()"><STZText Key="General.Cancel"/></MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"><STZText Key="General.Create"/></MudButton>
+    </MudStack>
+</EditForm>
+
+@code {
+    [Parameter] public  required Regulation Item { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private void OnSave()
+    {
+        MudDialog.Close(DialogResult.Ok(Item));
+    }
+}

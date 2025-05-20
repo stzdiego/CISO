@@ -1,0 +1,51 @@
+@using CISO.AuditService.Shared.Entities
+@using CISO.AuditService.Shared.Enums
+@using MudBlazor
+@using STZ.Frontend.Components
+@using STZ.Frontend.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject LocalizationService Localization
+
+<EditForm Model="Item" OnValidSubmit="OnSave">
+    <DataAnnotationsValidator />
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Number")" @bind-Value="@Item.Number"
+                          For="@(() => Item.Number)"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField T="string" Label="@Localization.Get("General.Title")" @bind-Value="@Item.Title"
+                          For="@(() => Item.Title)"/>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Color="@Color.Error">
+            </MudText>
+        </MudItem>
+    </MudGrid>
+    
+    <ValidationSummary />
+
+    <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">
+        <MudButton OnClick="() => MudDialog.Cancel()"><STZText Key="General.Cancel"/></MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"><STZText Key="General.Create"/></MudButton>
+    </MudStack>
+</EditForm>
+
+@code {
+    [Parameter] public  required RegulationSection Item { get; set; }
+    [Parameter] public required Regulation Regulation { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Item.IdRegulation = Regulation.Id;
+        base.OnInitialized();
+    }
+
+    private void OnSave()
+    {
+        MudDialog.Close(DialogResult.Ok(Item));
+    }
+}

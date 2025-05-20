@@ -4,7 +4,7 @@ using STZ.Shared.Bases;
 
 namespace CISO.AuditService.Shared.Entities;
 
-public class RequerimentAttachment : AuditBase<Guid>
+public class RequirementAttachment : AuditBase<Guid>
 {
     [Required]
     public Guid IdAttachment { get; set; }
@@ -13,5 +13,5 @@ public class RequerimentAttachment : AuditBase<Guid>
     public Guid IdRequeriment { get; set; }
     
     [ForeignKey(nameof(IdRequeriment))]
-    public Requeriment? Requeriment { get; set; }
+    public Requirement? Requeriment { get; set; }
 }

@@ -21,7 +21,7 @@ public class Regulation : AuditBase<Guid>
     public string? VersionRegulation { get; set; }
     
     [Required]
-    public DateTime PublicationDate { get; set; }
+    public DateTime? PublicationDate { get; set; } = DateTime.UtcNow;
     
     [Required] 
     public RegulationStatusEnum Status { get; set; } = RegulationStatusEnum.Draft;

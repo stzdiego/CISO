@@ -1,0 +1,344 @@
+@using STZ.Frontend.Dialogs
+@using STZ.Frontend.Services
+@inject LocalizationService Localization
+@inject ServiceBase<Regulation> RegulationService
+@inject ServiceBase<RegulationSection> SectionService
+@inject ServiceBase<Requirement> RequerimentService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+@if (_treeItems.Any())
+{
+    <MudPaper Square="true" Outlined="true">
+        <MudGrid Spacing="0">
+            <MudItem xs="4">
+                <MudTreeView T="TreeItemAuxiliar" ReadOnly="@ReadOnly" Items="@_treeItems"
+                             @bind-SelectedValue="_selectedItem">
+                    <ItemTemplate>
+                        <MudTreeViewItem @bind-Expanded="@context.Expanded" Items="@context.Children"
+                                         Value="@context.Value"
+                                         Icon="@context.Icon" Text="@context.Text">
+                            <BodyContent Context="item">
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
+                                    <MudText Style="justify-self: start;">@item.Text</MudText>
+                                    <div style="justify-self: end;">
+                                        @if (item.Value?.Regulation is not null)
+                                        {
+                                            @*
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnAddSection(item.Value.Regulation))"/>
+                                                           *@
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnEditRegulation(item.Value.Regulation))"/>
+                                        }
+
+                                        @if (item.Value?.Section is not null)
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnAddRequirement(item.Value.Section))"/>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnEditSection(item.Value.Section))"/>
+                                            @*
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnDeleteSection(item.Value.Section))"/>
+                                                           *@
+                                        }
+
+                                        @if (item.Value?.Requirement is not null)
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnEditRequirement(item.Value.Requirement))"/>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Medium"
+                                                           Color="Color.Inherit"
+                                                           OnClick="@(async () => await OnDeleteRequirement(item.Value.Requirement))"/>
+                                        }
+
+
+                                    </div>
+                                </div>
+                            </BodyContent>
+                        </MudTreeViewItem>
+                    </ItemTemplate>
+                </MudTreeView>
+            </MudItem>
+
+            <MudItem xs="8">
+                <MudPaper Square
+                          Outlined
+                          Style="padding: 0.5rem"
+                          Height="100%">
+                    @if (_selectedItem?.Requirement is not null)
+                    {
+                        <RequirementComponent Requirement="_selectedItem.Requirement" />
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}
+
+@code {
+    [Parameter] public required Regulation Regulation { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+
+    private IList<RegulationSection> _sections = [];
+    private List<TreeItemData<TreeItemAuxiliar>> _treeItems { get; set; } = new();
+    private TreeItemAuxiliar? _selectedItem;
+    private Dictionary<Guid, Requirement> _requirements = new();
+
+    public class TreeItemAuxiliar
+    {
+        public bool IsSection;
+        public Regulation? Regulation;
+        public RegulationSection? Section;
+        public Requirement? Requirement;
+    }
+
+    public class TreeItemPresenter : TreeItemData<TreeItemAuxiliar>
+    {
+        TreeItemAuxiliar Item { get; set; }
+
+        public TreeItemPresenter(LocalizationService localization, TreeItemAuxiliar item) : base(item)
+        {
+            Item = item;
+            if (item.Regulation is null)
+            {
+                Text = item.IsSection ? $"{item.Section!.Number} - {localization.Get(item.Section.Title)}" : $"{item.Requirement!.Number} - {localization.Get(item.Requirement.Title)}";
+            }
+            else
+            {
+                Text = localization.Get(item.Regulation.Name.Trim());
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateSections();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OnAddSection(Regulation regulation)
+    {
+        var item = new RegulationSection();
+        await ShowDialog(Localization.Get("General.AddSection"), typeof(Pages.RegulationSections.Add),
+            new Dictionary<string, object> { { "Item", item }, { "Regulation", regulation } },
+            async result =>
+            {
+                if (!result.Canceled)
+                {
+                    var newItem = (RegulationSection)result.Data!;
+                    await SectionService.AddAsync(newItem);
+                    Snackbar.Add(Localization.Get("General.RegisterAdded"), Severity.Success);
+                    await UpdateSections();
+                }
+            });
+    }
+
+    private async Task OnEditRegulation(Regulation item)
+    {
+        await ShowDialog(Localization.Get("General.EditRegulation"), typeof(Pages.Regulations.Edit),
+            new Dictionary<string, object> { { "Item", item } },
+            async result =>
+            {
+                if (!result.Canceled)
+                {
+                    await RegulationService.UpdateAsync(item.Id.ToString(), item);
+                    Regulation = await RegulationService.GetByIdAsync(item.Id.ToString())!;
+                    Snackbar.Add(Localization.Get("General.RegisterAdded"), Severity.Success);
+                    await UpdateSections();
+                }
+            });
+    }
+
+    private async Task OnAddRequirement(RegulationSection section)
+    {
+        var item = new Requirement();
+        await ShowDialog(Localization.Get("General.AddRequirement"), typeof(Pages.Requirements.Add),
+            new Dictionary<string, object> { { "Item", item }, { "RegulationSection", section } },
+            async result =>
+            {
+                if (!result.Canceled)
+                {
+                    var newItem = (Requirement)result.Data!;
+                    await RequerimentService.AddAsync(newItem);
+                    Snackbar.Add(Localization.Get("General.RegisterAdded"), Severity.Success);
+                    await UpdateSections();
+                }
+            });
+    }
+
+    private async Task OnEditSection(RegulationSection item)
+    {
+        await ShowDialog(Localization.Get("General.EditSection"), typeof(Pages.RegulationSections.Edit),
+            new Dictionary<string, object> { { "Item", item }, { "Regulation", Regulation } },
+            async result =>
+            {
+                if (!result.Canceled)
+                {
+                    await SectionService.UpdateAsync(item.Id.ToString(), item);
+                    Snackbar.Add("Registro agregado", Severity.Success);
+                    await UpdateSections();
+                }
+            });
+    }
+
+    private async Task OnDeleteSection(RegulationSection item)
+    {
+        var parameters = new DialogParameters<DeleteDialog>
+        {
+            { x => x.ContentText, Localization.Get("General.Confirmation") },
+            { x => x.ButtonText, Localization.Get("General.Delete") },
+            { x => x.Color, Color.Error }
+        };
+        
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Eliminar", parameters, options);
+        var result = await dialog.Result;
+        
+        if (result?.Canceled == true)
+        {
+            Snackbar.Add(Localization.Get("General.Deleted.Canceled"), Severity.Info);
+        }
+        else
+        {
+            await SectionService.DeleteAsync(item.Id);
+            Snackbar.Add(Localization.Get("General.RegisterDeleted"), Severity.Success);
+            await UpdateSections();
+        }
+    }
+
+    private async Task OnDeleteRequirement(Requirement item)
+    {
+        var parameters = new DialogParameters<DeleteDialog>
+        {
+            { x => x.ContentText, Localization.Get("General.Confirmation") },
+            { x => x.ButtonText, Localization.Get("General.Delete") },
+            { x => x.Color, Color.Error }
+        };
+        
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Eliminar", parameters, options);
+        var result = await dialog.Result;
+        
+        if (result?.Canceled == true)
+        {
+            Snackbar.Add(Localization.Get("General.Deleted.Canceled"), Severity.Info);
+        }
+        else
+        {
+            await RequerimentService.DeleteAsync(item.Id);
+            Snackbar.Add(Localization.Get("General.RegisterDeleted"), Severity.Success);
+            await UpdateSections();
+        }
+    }
+
+    private async Task OnEditRequirement(Requirement item)
+    {
+        await ShowDialog(Localization.Get("General.EditRequirement"), typeof(Pages.Requirements.Edit),
+            new Dictionary<string, object> { { "Item", item }, { "RegulationSection", _sections.FirstOrDefault(s => s.Id == item.IdRegulationSection) } },
+            async result =>
+            {
+                if (!result.Canceled)
+                {
+                    await RequerimentService.UpdateAsync(item.Id.ToString(), item);
+                    Snackbar.Add(Localization.Get("General.RegisterAdded"), Severity.Success);
+                    await UpdateSections();
+                }
+            });
+    }
+
+    private async Task UpdateSections()
+    {
+        try
+        {
+            _treeItems.Clear();
+            _requirements.Clear();
+
+            // Item default
+            var itemDefault = new TreeItemPresenter(
+                Localization = Localization,
+                new TreeItemAuxiliar
+                {
+                    Regulation = Regulation
+                });
+            itemDefault.Children = new List<TreeItemData<TreeItemAuxiliar>>();
+            itemDefault.Expanded = true;
+
+            // Add sections
+            _sections = await SectionService.FindAsync($"IdRegulation = Guid(\"{Regulation.Id.ToString()}\")");
+            _sections = _sections.OrderBy(x => x.Number).ToList();
+            foreach (var section in _sections)
+            {
+                var itemSection = new TreeItemPresenter(
+                    Localization = Localization,
+                    new TreeItemAuxiliar
+                    {
+                        IsSection = true,
+                        Section = section
+                    });
+
+                itemDefault.Children!.Add(itemSection);
+                var requirements = await RequerimentService.FindAsync($"IdRegulationSection = Guid(\"{section.Id.ToString()}\")");
+                requirements = requirements.OrderBy(x => x.Number).ToList();
+                
+                foreach (var requirement in requirements)
+                {
+                    _requirements.Add(requirement.Id, requirement);
+                }
+
+                foreach (var requirement in requirements)
+                {
+                    var treeItemRequirement = new TreeItemAuxiliar
+                    {
+                        IsSection = false,
+                        Requirement = requirement
+                    };
+
+                    var treeItemRequirementPresenter = new TreeItemPresenter(Localization, treeItemRequirement);
+
+                    if (itemSection.Children is null)
+                    {
+                        itemSection.Children = new List<TreeItemData<TreeItemAuxiliar>>();
+                    }
+
+                    itemSection.Children!.Add(treeItemRequirementPresenter);
+                }
+            }
+
+            _treeItems.Add(itemDefault);
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    private async Task ShowDialog(string title, Type componentType, Dictionary<string, object> parameters, Func<DialogResult, Task>? onResult = null)
+    {
+        var dialogParameters = new DialogParameters
+        {
+            ["ComponentType"] = componentType,
+            ["ComponentParameters"] = parameters
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<DataGridTemplateDialog>(title, dialogParameters, options);
+        var result = await dialog.Result;
+
+        if (onResult != null)
+        {
+            await onResult(result);
+        }
+    }
+
+}
