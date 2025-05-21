@@ -1,0 +1,51 @@
+@using CISO.AuditService.Shared.Entities
+@using CISO.CertificationService.Shared.Entities
+@using MudBlazor
+@using STZ.Frontend.Components
+@using STZ.Frontend.Services
+@using Microsoft.AspNetCore.Components.Forms
+@using STZ.Shared.Entities
+@inject LocalizationService Localization
+
+<EditForm Model="@Item" OnValidSubmit="OnSave">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <STZEntityField TItem="User" PropertyName="Email" Label="General.User" @bind-SelectedItem="_userSelected"/>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <STZEntityField TItem="Regulation" PropertyName="Name" Label="General.Regulation" @bind-SelectedItem="_regulationSelected"/>
+        </MudItem>
+        
+        <MudItem xs="12">
+            <MudText Color="@Color.Error">
+                <ValidationSummary/>
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">
+        <MudButton OnClick="() => MudDialog.Cancel()">
+            <STZText Key="General.Cancel"/>
+        </MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">
+            <STZText Key="General.Create"/>
+        </MudButton>
+    </MudStack>
+</EditForm>
+
+@code {
+    [Parameter] public RegulationCompany Item { get; set; } = new();
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private User? _userSelected;
+    private Regulation? _regulationSelected;
+
+    private void OnSave()
+    {
+        Item.UserResponsibleId = _userSelected!.Id;
+        Item.RegulationId = _regulationSelected!.Id;
+        MudDialog.Close(DialogResult.Ok(Item));
+    }
+
+}

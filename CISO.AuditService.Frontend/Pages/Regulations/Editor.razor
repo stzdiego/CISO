@@ -1,15 +1,15 @@
 @page "/Audit/Editor"
 @attribute [STZAuthorize("AuditEditor")]
-@using STZ.Frontend.Components
 @using STZ.Frontend.Authorization
 @using STZ.Frontend.Services
+@using CISO.Shared.Frontend.Components
 @inject LocalizationService Localization
 
 <PageTitle>@Localization.Get("Audit.Editor")</PageTitle>
 <STZToolbarTitle Title="Audit.Editor"  />
 
 <MudPaper Class="px-4 py-6 mt-4">
-    <STZEntityField TItem="Regulation" AddComponentType="@typeof(Add)" PropertyName="Name" DeleteButton="true"
+    <STZEntityField TItem="Regulation" AddComponentType="@typeof(CISO.Shared.Frontend.Components.Regulations.Add)" PropertyName="Name" DeleteButton="true"
                     Label="General.Regulation" SelectedItemChanged="OnChangeRegulation" />
     
     @if (_regulation is not null)

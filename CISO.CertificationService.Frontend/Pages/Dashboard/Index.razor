@@ -1,0 +1,126 @@
+﻿@page "/Dashboard"
+@using CISO.AuditService.Shared.Entities
+@using CISO.CertificationService.Shared.Entities
+@using STZ.Shared.Bases
+@using STZ.Shared.Entities
+@attribute [STZAuthorize("Dashboard")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ServiceBase<User> UserService
+@inject ServiceBase<Company> CompanyService
+@inject ServiceBase<Regulation> RegulationService
+@inject ServiceBase<RegulationCompany> RegulationCompanyService
+
+<PageTitle>Dashboard</PageTitle>
+
+@if (_company is null)
+{
+    <STZText Key="General.UserWithoutCompany"/>
+}
+else
+{
+    @*Usuarios por compañía*@
+    <MudGrid Class="mt-1">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4">@_company.Name</MudText>
+        </MudItem>
+        <MudItem xs="8" sm="4">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText><STZText Key="General.UsersCompany"/></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="GetRegulationCompanies" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Row>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h3">@_userCount</MudText>
+                            <MudText><STZText Key="General.Users"/></MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        @*Regulaciones por compañía*@
+        <MudItem xs="8" sm="4">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText><STZText Key="General.Regulations"/></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="GetRegulationCompanies" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Row>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h3">@_regulationCount</MudText>
+                            <MudText><STZText Key="General.Assigned"/></MudText>
+                        </MudStack>
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h3">@_regulationFinished</MudText>
+                            <MudText><STZText Key="General.Finished"/></MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code
+{
+    private string? _userEmail;
+    private User? _user;
+    private Company? _company;
+    private int _regulationCount;
+    private int _regulationFinished;
+    private int _userCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            _userEmail = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ??
+                         throw new InvalidOperationException("User email not found");
+        }
+
+        var response = await UserService.FindAsync($"Email = \"{_userEmail}\"");
+        _user = response.SingleOrDefault() ?? throw new InvalidOperationException("User not found");
+        _company = await CompanyService.GetByIdAsync(_user.CompanyId.ToString());
+        if (_company is null) return;
+
+        GetMetrics();
+    }
+
+    private async void GetMetrics()
+    {
+        GetRegulationCompanies();
+        GetUsersCompanie();
+    }
+
+    private async void GetRegulationCompanies()
+    {
+        if (_company is null) return;
+        var regulationCompanies = await RegulationCompanyService.FindAsync($"CompanyId = Guid(\"{_company.Id.ToString()}\")");
+        _regulationCount = regulationCompanies.Count;
+        
+        // Get regulations finished
+        _regulationFinished = 0;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void GetUsersCompanie()
+    {
+        if (_company is null) return;
+        var users = await UserService.FindAsync($"CompanyId = Guid(\"{_company.Id.ToString()}\")");
+        _userCount = users.Count;
+        await InvokeAsync(StateHasChanged);
+    }
+}

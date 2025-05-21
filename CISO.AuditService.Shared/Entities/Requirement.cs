@@ -11,7 +11,7 @@ public class Requirement : AuditBase<Guid>
     public string Number { get; set; } = null!;
     
     [Required]
-    [StringLength(20)]
+    [StringLength(100)]
     public string Title { get; set; } = null!;
     
     public string? Description { get; set; }

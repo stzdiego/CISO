@@ -1,0 +1,146 @@
+@page "/Certification/Trace"
+@attribute [STZAuthorize("CertificationTrace")]
+@using CISO.AuditService.Shared.Entities
+@using STZ.Frontend.Services
+@using CISO.CertificationService.Shared.Entities
+@using CISO.Shared.Frontend.Services
+@using STZ.Shared.Bases
+@using STZ.Shared.Entities
+@using CISO.Shared.Frontend.Components
+@inject LocalizationService Localization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ServiceBase<User> UserService
+@inject ServiceBase<Company> CompanyService
+@inject ServiceBase<Regulation> RegulationService
+@inject ServiceBase<RegulationCompany> RegulationCompanyService
+@inject CustomTraceService CustomTraceService
+@inject ServiceBase<Requirement> RequerimentService
+@inject ServiceBase<RegulationSection> SectionService
+
+<PageTitle>@Localization.Get("Certification.Trace")</PageTitle>
+
+@if (_company is null)
+{
+    <MudText>@Localization.Get("General.CompanyNotFound")</MudText>
+}
+else
+{
+    <MudText Class="mt-2" Typo="Typo.h6">@_company.Name</MudText>
+
+    <STZToolbarTitle Title="Certification.Trace"/>
+
+    <MudPaper Class="px-4 py-6 mt-4">
+        <MudText>
+            <STZText Key="General.Regulations"/>
+        </MudText>
+        <MudSelect T="string" ValueChanged="OnRegulationChange">
+            @foreach (var regulation in _regulationCompanies)
+            {
+                <MudSelectItem T="string" Value="@regulation.Item.RegulationId.ToString()">
+                    @regulation.RegulationName
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+        @if (_regulation is not null)
+        {
+            <MudStack Class="mt-4">
+                <RegulationComponent Regulation="_regulation"
+                                     ReadOnly="true"
+                                     SelectedValuesChanged="RegulationComponentSelectedValuesChange"
+                                     SelectedRequirements="_selectedRequirements"/>
+            </MudStack>
+        }
+    </MudPaper>
+}
+
+@code {
+    private Regulation? _regulation;
+    private string _userEmail;
+    private User? _user;
+    private Company? _company;
+    private IList<RegulationCompanies.Index.RegulationCompanyDto> _regulationCompanies = [];
+    private List<Requirement> _selectedRequirements = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            _userEmail = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ??
+                         throw new InvalidOperationException("User email not found");
+        }
+
+        var response = await UserService.FindAsync($"Email = \"{_userEmail}\"");
+        _user = response.SingleOrDefault() ?? throw new InvalidOperationException("User not found");
+        _company = await CompanyService.GetByIdAsync(_user.CompanyId.ToString());
+        if (_company is null) return;
+
+        await GetRegulationCompanies();
+    }
+
+    private async Task GetRegulationCompanies()
+    {
+        if (_company is null) return;
+        _regulationCompanies.Clear();
+        var regulationCompanies = await RegulationCompanyService.FindAsync($"CompanyId = Guid(\"{_company.Id.ToString()}\")");
+        if (!regulationCompanies.Any()) return;
+
+        foreach (var item in regulationCompanies)
+        {
+            var regulation = await RegulationService.GetByIdAsync(item.RegulationId.ToString());
+            var responsable = await UserService.GetByIdAsync(item.UserResponsibleId.ToString());
+            if (regulation is null) continue;
+            if (responsable is null) continue;
+
+            var regulationCompany = new RegulationCompanies.Index.RegulationCompanyDto
+            {
+                Item = item,
+                RegulationName = regulation.Name,
+                UserName = $"{responsable.FullName}"
+            };
+
+            _regulationCompanies.Add(regulationCompany);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnRegulationChange(string value)
+    {
+        _regulation = await RegulationService.GetByIdAsync(value);
+        if (_regulation is null) return;
+
+        if (_company is null) return;
+        var traces = await CustomTraceService.GetTracesByCompanyAsync(_company);
+        var sections = await SectionService.FindAsync($"IdRegulation = Guid(\"{_regulation.Id.ToString()}\")");
+        var requirements = new List<Requirement>();
+
+        foreach (var section in sections)
+        {
+            var requirementsSection = await RequerimentService.FindAsync($"IdRegulationSection = Guid(\"{section.Id.ToString()}\")");
+            if (!requirementsSection.Any()) continue;
+            requirements.AddRange(requirementsSection);
+        }
+
+        foreach (var trace in traces)
+        {
+            var requirement = requirements.FirstOrDefault(x => x.Id == trace.RequirementId);
+            if (requirement is null) continue;
+            _selectedRequirements.Add(requirement);
+        }
+    }
+
+    private async Task RegulationComponentSelectedValuesChange(IEnumerable<Requirement> values)
+    {
+        if (_regulation is null) return;
+        if (_company is null) return;
+        if (_user is null) return;
+
+        var requirements = values.ToList();
+
+        await CustomTraceService.UpdateTraceByRegulationAsync(_company, _user, requirements);
+    }
+
+}

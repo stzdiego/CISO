@@ -1,5 +1,4 @@
-@using STZ.Frontend.Dialogs
-@using STZ.Frontend.Services
+@using CISO.Shared.Frontend.Services
 @inject LocalizationService Localization
 @inject ServiceBase<Regulation> RegulationService
 @inject ServiceBase<RegulationSection> SectionService
@@ -12,55 +11,329 @@
     <MudPaper Square="true" Outlined="true">
         <MudGrid Spacing="0">
             <MudItem xs="4">
-                <MudTreeView T="TreeItemAuxiliar" ReadOnly="@ReadOnly" Items="@_treeItems"
-                             @bind-SelectedValue="_selectedItem">
+                <MudTreeView T="TreeItemAuxiliar"
+                             Items="@_treeItems"
+                             @bind-SelectedValue="_selectedItem"
+                             Height="46rem"
+                             MaxHeight="46rem"
+                             SelectionMode="@(ReadOnly ? SelectionMode.MultiSelection : SelectionMode.SingleSelection)"
+                             SelectedValues="@_selectedItems"
+                             SelectedValuesChanged="OnSelectedValuesChange">
                     <ItemTemplate>
-                        <MudTreeViewItem @bind-Expanded="@context.Expanded" Items="@context.Children"
+                        <MudTreeViewItem @bind-Expanded="@context.Expanded"
+                                         Items="@context.Children"
                                          Value="@context.Value"
-                                         Icon="@context.Icon" Text="@context.Text">
+                                         SelectedChanged="OnTreeViewChange"
+                                         Icon="@context.Icon"
+                                         Text="@context.Text">
                             <BodyContent Context="item">
                                 <div
                                     style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
                                     <MudText Style="justify-self: start;">@item.Text</MudText>
                                     <div style="justify-self: end;">
-                                        @if (item.Value?.Regulation is not null)
+                                        @if (ReadOnly)
                                         {
-                                            @*
+                                            @if (item.Value?.Requirement is not null)
+                                            {
+                                                <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                                               Size="Size.Medium"
+                                                               Color="Color.Inherit"
+                                                               OnClick="@(() => OnViewRequirement(item.Value))"/>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @if (item.Value?.Regulation is not null)
+                                            {
+                                                @*
                                             <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium"
                                                            Color="Color.Inherit"
                                                            OnClick="@(async () => await OnAddSection(item.Value.Regulation))"/>
-                                                           *@
-                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
-                                                           Color="Color.Inherit"
-                                                           OnClick="@(async () => await OnEditRegulation(item.Value.Regulation))"/>
-                                        }
+                                                           
+                                                
 
-                                        @if (item.Value?.Section is not null)
-                                        {
-                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium"
-                                                           Color="Color.Inherit"
-                                                           OnClick="@(async () => await OnAddRequirement(item.Value.Section))"/>
+                                                
+
+
+
+                                                
+
+
+
+
+
+
+
+                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                *@
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
+                                                               Color="Color.Inherit"
+                                                               OnClick="@(async () => await OnEditRegulation(item.Value.Regulation))"/>
+                                            }
+
+                                            @if (item.Value?.Section is not null)
+                                            {
+                                                <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium"
+                                                               Color="Color.Inherit"
+                                                               OnClick="@(async () => await OnAddRequirement(item.Value.Section))"/>
+                                                @*
                                             <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
                                                            Color="Color.Inherit"
                                                            OnClick="@(async () => await OnEditSection(item.Value.Section))"/>
-                                            @*
                                             <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Medium"
                                                            Color="Color.Inherit"
                                                            OnClick="@(async () => await OnDeleteSection(item.Value.Section))"/>
-                                                           *@
+                                                           
+                                                
+
+                                                
+
+
+
+                                                
+
+
+
+
+
+
+
+                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                *@
+                                            }
+
+                                            @if (item.Value?.Requirement is not null)
+                                            {
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
+                                                               Color="Color.Inherit"
+                                                               OnClick="@(async () => await OnEditRequirement(item.Value.Requirement))"/>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Medium"
+                                                               Color="Color.Inherit"
+                                                               OnClick="@(async () => await OnDeleteRequirement(item.Value.Requirement))"/>
+                                            }
                                         }
-
-                                        @if (item.Value?.Requirement is not null)
-                                        {
-                                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Medium"
-                                                           Color="Color.Inherit"
-                                                           OnClick="@(async () => await OnEditRequirement(item.Value.Requirement))"/>
-                                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Medium"
-                                                           Color="Color.Inherit"
-                                                           OnClick="@(async () => await OnDeleteRequirement(item.Value.Requirement))"/>
-                                        }
-
-
                                     </div>
                                 </div>
                             </BodyContent>
@@ -76,7 +349,7 @@
                           Height="100%">
                     @if (_selectedItem?.Requirement is not null)
                     {
-                        <RequirementComponent Requirement="_selectedItem.Requirement" />
+                        <RequirementComponent @bind-Requirement="_selectedItem.Requirement" ReadOnly="@ReadOnly"/>
                     }
                 </MudPaper>
             </MudItem>
@@ -87,11 +360,14 @@
 @code {
     [Parameter] public required Regulation Regulation { get; set; }
     [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public EventCallback<IEnumerable<Requirement?>> SelectedValuesChanged { get; set; }
+    [Parameter] public List<Requirement> SelectedRequirements { get; set; } = new();
 
     private IList<RegulationSection> _sections = [];
     private List<TreeItemData<TreeItemAuxiliar>> _treeItems { get; set; } = new();
     private TreeItemAuxiliar? _selectedItem;
     private Dictionary<Guid, Requirement> _requirements = new();
+    private IReadOnlyCollection<TreeItemAuxiliar>? _selectedItems = [];
 
     public class TreeItemAuxiliar
     {
@@ -110,7 +386,7 @@
             Item = item;
             if (item.Regulation is null)
             {
-                Text = item.IsSection ? $"{item.Section!.Number} - {localization.Get(item.Section.Title)}" : $"{item.Requirement!.Number} - {localization.Get(item.Requirement.Title)}";
+                Text = item.IsSection ? $"{item.Section!.Number}. {localization.Get(item.Section.Title)}" : $"{item.Requirement!.Number}. {localization.Get(item.Requirement.Title)}";
             }
             else
             {
@@ -122,13 +398,91 @@
     protected override async Task OnInitializedAsync()
     {
         await UpdateSections();
+
+        if (ReadOnly)
+        {
+            await GetSelectedValues();
+        }
+
         await base.OnInitializedAsync();
+    }
+
+    private async Task GetSelectedValues()
+    {
+        var selectedItemsAux = new List<TreeItemAuxiliar>();
+
+        // Agrega los requerimientos seleccionados
+        if (SelectedRequirements.Any())
+        {
+            foreach (var item in SelectedRequirements)
+            {
+                var treeItem = FindTreeItemByRequirementId(_treeItems, item.Id);
+                if (treeItem != null && !selectedItemsAux.Contains(treeItem.Value))
+                {
+                    selectedItemsAux.Add(treeItem.Value);
+                }
+            }
+        }
+
+        // Recorre las secciones y verifica si todos sus hijos están seleccionados
+        var sectionNodes = _treeItems.SelectMany(x => x.Children ?? Enumerable.Empty<TreeItemData<TreeItemAuxiliar>>()).ToList();
+        foreach (var sectionNode in sectionNodes)
+        {
+            if (sectionNode.Children is not null && sectionNode.Children.Any())
+            {
+                var allChildrenSelected = sectionNode.Children
+                    .All(child => selectedItemsAux.Contains(child.Value));
+                if (allChildrenSelected && !selectedItemsAux.Contains(sectionNode.Value))
+                {
+                    selectedItemsAux.Add(sectionNode.Value);
+                }
+            }
+        }
+
+        // Si todas las secciones están seleccionadas, selecciona también la raíz
+        if (sectionNodes.All(s => selectedItemsAux.Contains(s.Value)) && _treeItems.Any())
+        {
+            var root = _treeItems.First();
+            if (!selectedItemsAux.Contains(root.Value))
+            {
+                selectedItemsAux.Add(root.Value);
+            }
+        }
+
+        if (selectedItemsAux.Any())
+        {
+            _selectedItems = selectedItemsAux;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private TreeItemData<TreeItemAuxiliar>? FindTreeItemByRequirementId(IEnumerable<TreeItemData<TreeItemAuxiliar>> nodes, Guid requirementId)
+    {
+        foreach (var node in nodes)
+        {
+            if (node.Value.Requirement?.Id == requirementId)
+                return node;
+
+            if (node.Children is not null && node.Children.Any())
+            {
+                var found = FindTreeItemByRequirementId(node.Children, requirementId);
+                if (found != null)
+                    return found;
+            }
+        }
+
+        return null;
+    }
+
+    private async Task OnViewRequirement(TreeItemAuxiliar value)
+    {
+        _selectedItem = value;
     }
 
     private async Task OnAddSection(Regulation regulation)
     {
         var item = new RegulationSection();
-        await ShowDialog(Localization.Get("General.AddSection"), typeof(Pages.RegulationSections.Add),
+        await ShowDialog(Localization.Get("General.AddSection"), typeof(RegulationSections.Add),
             new Dictionary<string, object> { { "Item", item }, { "Regulation", regulation } },
             async result =>
             {
@@ -144,7 +498,7 @@
 
     private async Task OnEditRegulation(Regulation item)
     {
-        await ShowDialog(Localization.Get("General.EditRegulation"), typeof(Pages.Regulations.Edit),
+        await ShowDialog(Localization.Get("General.EditRegulation"), typeof(Regulations.Edit),
             new Dictionary<string, object> { { "Item", item } },
             async result =>
             {
@@ -161,7 +515,7 @@
     private async Task OnAddRequirement(RegulationSection section)
     {
         var item = new Requirement();
-        await ShowDialog(Localization.Get("General.AddRequirement"), typeof(Pages.Requirements.Add),
+        await ShowDialog(Localization.Get("General.AddRequirement"), typeof(Requirements.Add),
             new Dictionary<string, object> { { "Item", item }, { "RegulationSection", section } },
             async result =>
             {
@@ -177,7 +531,7 @@
 
     private async Task OnEditSection(RegulationSection item)
     {
-        await ShowDialog(Localization.Get("General.EditSection"), typeof(Pages.RegulationSections.Edit),
+        await ShowDialog(Localization.Get("General.EditSection"), typeof(RegulationSections.Edit),
             new Dictionary<string, object> { { "Item", item }, { "Regulation", Regulation } },
             async result =>
             {
@@ -198,11 +552,11 @@
             { x => x.ButtonText, Localization.Get("General.Delete") },
             { x => x.Color, Color.Error }
         };
-        
+
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
         var dialog = await DialogService.ShowAsync<DeleteDialog>("Eliminar", parameters, options);
         var result = await dialog.Result;
-        
+
         if (result?.Canceled == true)
         {
             Snackbar.Add(Localization.Get("General.Deleted.Canceled"), Severity.Info);
@@ -223,11 +577,11 @@
             { x => x.ButtonText, Localization.Get("General.Delete") },
             { x => x.Color, Color.Error }
         };
-        
+
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
         var dialog = await DialogService.ShowAsync<DeleteDialog>("Eliminar", parameters, options);
         var result = await dialog.Result;
-        
+
         if (result?.Canceled == true)
         {
             Snackbar.Add(Localization.Get("General.Deleted.Canceled"), Severity.Info);
@@ -242,7 +596,7 @@
 
     private async Task OnEditRequirement(Requirement item)
     {
-        await ShowDialog(Localization.Get("General.EditRequirement"), typeof(Pages.Requirements.Edit),
+        await ShowDialog(Localization.Get("General.EditRequirement"), typeof(Requirements.Edit),
             new Dictionary<string, object> { { "Item", item }, { "RegulationSection", _sections.FirstOrDefault(s => s.Id == item.IdRegulationSection) } },
             async result =>
             {
@@ -288,7 +642,7 @@
                 itemDefault.Children!.Add(itemSection);
                 var requirements = await RequerimentService.FindAsync($"IdRegulationSection = Guid(\"{section.Id.ToString()}\")");
                 requirements = requirements.OrderBy(x => x.Number).ToList();
-                
+
                 foreach (var requirement in requirements)
                 {
                     _requirements.Add(requirement.Id, requirement);
@@ -339,6 +693,20 @@
         {
             await onResult(result);
         }
+    }
+
+    private void OnTreeViewChange(bool obj)
+    {
+        if (_selectedItem is null)
+        {
+            return;
+        }
+    }
+
+    private async Task OnSelectedValuesChange(IEnumerable<TreeItemAuxiliar> selectedItems)
+    {
+        var selected = selectedItems.Select(x => x.Requirement);
+        await SelectedValuesChanged.InvokeAsync(selected);
     }
 
 }

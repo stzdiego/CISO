@@ -18,18 +18,17 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\STZ\STZ.Frontend\STZ.Frontend.csproj" />
+      <ProjectReference Include="..\..\STZ\STZ.Shared\STZ.Shared.csproj" />
       <ProjectReference Include="..\CISO.AuditService.Shared\CISO.AuditService.Shared.csproj" />
-      <ProjectReference Include="..\CISO.Shared.Frontend\CISO.Shared.Frontend.csproj" />
+      <ProjectReference Include="..\CISO.CertificationService.Shared\CISO.CertificationService.Shared.csproj" />
+      <ProjectReference Include="..\CISO.EvidenceService.Shared\CISO.EvidenceService.Shared.csproj" />
+      <ProjectReference Include="..\CISO.ManagementService.Shared\CISO.ManagementService.Shared.csproj" />
+      <ProjectReference Include="..\Shared\CISO.Shared\CISO.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Components\" />
-      <Folder Include="Pages\RegulationSections\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <UpToDateCheckInput Remove="Pages\Requirements\Add.razor" />
-      <UpToDateCheckInput Remove="Pages\Requirements\Edit.razor" />
+      <AdditionalFiles Include="Components\Requirements\Add.razor" />
+      <AdditionalFiles Include="Components\Requirements\Edit.razor" />
     </ItemGroup>
 
 </Project>

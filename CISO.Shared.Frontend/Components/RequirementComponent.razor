@@ -1,0 +1,127 @@
+@using CISO.AuditService.Shared.Entities
+@using PSC.Blazor.Components.MarkdownEditor
+@using STZ.Frontend.Services
+@using STZ.Shared.Bases
+@inject ServiceBase<RequirementLanguage> RequirementLanguageService
+@inject LocalizationService Localization
+
+<MudGrid Class="mb-4">
+    <MudItem xs="12">
+        <MudTextField T="string" Label="@Localization.Get("General.Title")" Typo="Typo.body2"
+                      @bind-Value="@Requirement.Title" ReadOnly Variant="Variant.Text"/>
+    </MudItem>
+    <MudItem xs="12">
+        <MudTextField T="string" Label="@Localization.Get("General.Description")" Typo="Typo.body2"
+                      @bind-Value="@Requirement.Description" ReadOnly/>
+    </MudItem>
+</MudGrid>
+
+<STZEntityField TItem="Language?" PropertyName="Name" SelectedItem="_langSelected"
+                Label="General.Language" SelectedItemChanged="OnChangeLanguage"/>
+
+<div class="mt-4">
+    @if (ReadOnly)
+    {
+        <MudPaper Square="true" Class="p-4" Outlined="true">
+            <div style="margin-left: 2rem">
+                @((MarkupString)_htmlView)
+            </div>
+        </MudPaper>
+        
+    }
+    else
+    {
+        <MarkdownEditor @ref="_markDown"
+                        @bind-Value="@_markdownValue"
+                        ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                        SpellChecker="false"/>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSave" Disabled="@(!_savePending)">
+            <STZText Key="General.Save"/>
+        </MudButton>
+    }
+</div>
+
+@code {
+    [Parameter] public Requirement Requirement { get; set; }
+    [Parameter] public EventCallback<Requirement> RequirementChanged { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+    private MarkdownEditor _markDown;
+    private string _markdownValue;
+    private string _htmlValue;
+    private Language? _langSelected;
+    private bool _savePending;
+    private RequirementLanguage _reqLang;
+    private string _htmlView;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        _langSelected = null;
+        if (_markDown is not null) await _markDown.SetValueAsync("");
+        _htmlValue = string.Empty;
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task OnChangeLanguage(Language? lang)
+    {
+        _langSelected = lang;
+        _reqLang = await GetRequirementLanguage();
+
+        if (ReadOnly)
+        {
+            _htmlView = _reqLang.Html;
+        }
+        else
+        {
+            _markdownValue = _reqLang.Markdown;
+            await _markDown.SetValueAsync(_markdownValue);
+            _savePending = false;
+        }
+    }
+
+    private Task OnMarkdownValueHTMLChanged(string value)
+    {
+        if (_reqLang is null) return Task.CompletedTask;
+
+        if (!_reqLang.Html.Equals(value)) _savePending = true;
+        _htmlValue = value;
+
+        return Task.CompletedTask;
+    }
+
+    private async Task OnSave()
+    {
+        _reqLang.Markdown = await _markDown.GetValueAsync();
+        _reqLang.Html = _htmlValue;
+
+        if (_reqLang.RequirementId == Guid.Empty || _reqLang.LanguageId == Guid.Empty)
+        {
+            _reqLang.RequirementId = Requirement.Id;
+            _reqLang.LanguageId = _langSelected!.Id;
+            await RequirementLanguageService.AddAsync(_reqLang);
+        }
+        else
+        {
+            await RequirementLanguageService.UpdateAsync(_reqLang.Id.ToString(), _reqLang);
+        }
+
+        _reqLang = await GetRequirementLanguage();
+        _savePending = false;
+    }
+
+    private async Task<RequirementLanguage> GetRequirementLanguage()
+    {
+        var reqLangs =
+            await RequirementLanguageService
+                .FindAsync($"LanguageId = Guid(\"{_langSelected!.Id.ToString()}\") && RequirementId = Guid(\"{Requirement.Id.ToString()}\")");
+
+        return reqLangs.Any() ? reqLangs.Single() : new RequirementLanguage();
+    }
+
+    private async Task OnRequirementChanged(Requirement nuevoValor)
+    {
+        Requirement = nuevoValor;
+        await RequirementChanged.InvokeAsync(nuevoValor);
+    }
+
+}

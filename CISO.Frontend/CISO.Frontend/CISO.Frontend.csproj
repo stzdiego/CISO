@@ -10,6 +10,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
         <ProjectReference Include="..\..\..\STZ\STZ.Frontend\STZ.Frontend.csproj" />
         <ProjectReference Include="..\..\CISO.AuditService.Frontend\CISO.AuditService.Frontend.csproj" />
+        <ProjectReference Include="..\..\CISO.CertificationService.Frontend\CISO.CertificationService.Frontend.csproj" />
         <ProjectReference Include="..\..\CISO.ManagementService.Frontend\CISO.ManagementService.Frontend.csproj" />
         <ProjectReference Include="..\CISO.Frontend.Client\CISO.Frontend.Client.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.2" />

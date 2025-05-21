@@ -20,7 +20,15 @@
         </MudItem>
         <MudItem xs="12">
             <MudTextField T="string" Label="@Localization.Get("General.Description")" @bind-Value="@Item.Description"
-                          For="@(() => Item.Description)" Lines="4" Variant="Variant.Outlined"/>
+                          For="@(() => Item.Description)" Lines="2" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField T="string" Label="@Localization.Get("General.Scope")" @bind-Value="@Item.Scope"
+                          For="@(() => Item.Scope)" Lines="2" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField T="string" Label="@Localization.Get("General.Category")" @bind-Value="@Item.Category"
+                          For="@(() => Item.Category)" Lines="2" Variant="Variant.Outlined" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.VersionRegulation")" @bind-Value="@Item.VersionRegulation"
@@ -38,14 +46,6 @@
             <MudTextField T="string" Label="@Localization.Get("General.IssuingBody")" @bind-Value="@Item.IssuingBody"
                           For="@(() => Item.IssuingBody)"/>
         </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Scope")" @bind-Value="@Item.Scope"
-                          For="@(() => Item.Scope)"/>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudTextField T="string" Label="@Localization.Get("General.Category")" @bind-Value="@Item.Category"
-                          For="@(() => Item.Category)"/>
-        </MudItem>
 
         <MudItem xs="12">
             <MudText Color="@Color.Error">
@@ -55,7 +55,7 @@
 
     <MudStack Row Class="mt-4" Justify="Justify.FlexEnd">
         <MudButton OnClick="() => MudDialog.Cancel()"><STZText Key="General.Cancel"/></MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"><STZText Key="General.Update"/></MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"><STZText Key="General.Create"/></MudButton>
     </MudStack>
 </EditForm>
 
@@ -65,6 +65,7 @@
 
     private void OnSave()
     {
+        Item.PublicationDate = Item.PublicationDate?.ToUniversalTime();
         MudDialog.Close(DialogResult.Ok(Item));
     }
 }

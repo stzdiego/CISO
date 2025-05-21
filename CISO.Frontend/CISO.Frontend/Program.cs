@@ -1,6 +1,7 @@
 using Auth0.AspNetCore.Authentication;
 using CISO.Frontend.Components;
 using CISO.Frontend.Services;
+using CISO.Shared.Frontend.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -14,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddSTZFrontendServices(builder.Configuration);
 builder.Services.STZAuth0(builder.Configuration);
+
+// Business Logic
+builder.Services.AddScoped<CustomTraceService>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()

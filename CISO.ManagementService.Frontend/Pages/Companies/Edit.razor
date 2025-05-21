@@ -5,7 +5,7 @@
 @using STZ.Shared.Entities
 @inject LocalizationService Localization
 
-<EditForm OnValidSubmit="OnSave">
+<EditForm Model="Item" OnValidSubmit="OnSave">
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField T="string" Label="@Localization.Get("General.Nit")" @bind-Value="@Item.Nit" />
@@ -42,7 +42,7 @@
 </EditForm>
 
 @code {
-    [Parameter] public  required Company Item { get; set; }
+    [Parameter] public Company Item { get; set; }
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     private void OnSave()

@@ -65,6 +65,16 @@
                 <MudNavLink Href="/Audit/Editor" Icon="@Icons.Material.Filled.EditNote" Match="NavLinkMatch.Prefix"><STZText Key="Menu.AuditEditor" /></MudNavLink>
             </ChildContent>
         </MudNavGroup>
+        
+        <MudNavGroup Icon="@Icons.Material.Filled.TableChart">
+            <TitleContent>
+                <STZText Key="Menu.Certification" />
+            </TitleContent>
+            <ChildContent>
+                <MudNavLink Href="/RegulationCompanies" Icon="@Icons.Material.Filled.AddModerator" Match="NavLinkMatch.Prefix"><STZText Key="Menu.RegulationsCompanies" /></MudNavLink>
+                <MudNavLink Href="/Certification/Trace" Icon="@Icons.Material.Filled.TrackChanges" Match="NavLinkMatch.Prefix"><STZText Key="Menu.Trace" /></MudNavLink>
+            </ChildContent>
+        </MudNavGroup>
     </MudNavMenu>
 
     @if (IsOpen)
