@@ -58,4 +58,25 @@ public class CustomTraceService : ServiceBase<Trace>
             throw new Exception("Ocurrió un error al obtener las trazas.", e);
         }
     }
+    
+    public async Task<int> GetRegulationsWithAllTracesAsync(Company company)
+    {
+        try
+        {
+            var response = await HttpClient.PostAsJsonAsync($"{Endpoint}/get-regulations-with-all-traces", company.Id);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al obtener regulaciones: {errorMessage}");
+            }
+
+            var regulations = await response.Content.ReadFromJsonAsync<IEnumerable<Regulation>>();
+            return regulations?.Count() ?? 0;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Ocurrió un error al obtener las regulaciones con todas sus trazas.", e);
+        }
+    }
 }

@@ -14,11 +14,28 @@ public class TracesController : StzControllerBase<Trace>
 {
     private readonly ILogger<TracesController> _logger;
     private readonly CertificationServiceContext _context;
+    private readonly ServiceBase<Regulation> _regulationService;
+    private readonly ServiceBase<RegulationSection> _sectionsService;
+    private readonly ServiceBase<Requirement> _requirementsService;
+    private readonly ServiceBase<RegulationCompany> _regulationsCompanyService;
+    private readonly ServiceBase<Trace> _tracesService;
 
-    public TracesController(ILogger<TracesController> logger, CertificationServiceContext context) : base(logger, context)
+    public TracesController(
+        ILogger<TracesController> logger, 
+        CertificationServiceContext context,
+        ServiceBase<Regulation> regulationService,
+        ServiceBase<RegulationSection> sectionsService,
+        ServiceBase<Requirement> requirementsService,
+        ServiceBase<RegulationCompany> regulationsCompanyService,
+        ServiceBase<Trace> tracesService) : base(logger, context)
     {
         _logger = logger;
         _context = context;
+        _regulationService = regulationService;
+        _sectionsService = sectionsService;
+        _requirementsService = requirementsService;
+        _regulationsCompanyService = regulationsCompanyService;
+        _tracesService = tracesService;
     }
     
     [HttpPost]
@@ -85,4 +102,61 @@ public class TracesController : StzControllerBase<Trace>
             return StatusCode(500, "Internal server error");
         }
     }
+    
+    [HttpPost]
+    [Route("get-regulations-with-all-traces")]
+    public async Task<IActionResult> GetRegulationsWithAllTraces([FromBody] Guid companyId)
+    {
+        try
+        {
+            // Obtener todas las regulaciones usando el servicio
+            var regulationsCompany = await _regulationsCompanyService.FindAsync($"CompanyId = Guid(\"{companyId.ToString()}\")");
+            var regulations = new List<Regulation>();
+
+            foreach (var regulationCompany in regulationsCompany)
+            {
+                var totalRequirements = 0;
+                var finishedRequirements = 0;
+                var requirements = new List<Requirement>();
+                
+                var regulation = await _regulationService.GetByIdAsync(regulationCompany.RegulationId.ToString());
+                
+                // Obtener secciones de la regulación
+                var sections = await _sectionsService.FindAsync($"IdRegulation = Guid(\"{regulationCompany.RegulationId.ToString()}\")");
+                
+                // Obtengo los requerimientos de cada sección
+                foreach (var section in sections)
+                {
+                    var resRequirements = await _requirementsService.FindAsync($"IdRegulationSection = Guid(\"{section.Id.ToString()}\")");
+                    requirements.AddRange(resRequirements);
+                }
+                totalRequirements += requirements.Count;
+                
+                // Obtener trazas de la compañia
+                var traces = await _tracesService.FindAsync($"CompanyId = Guid(\"{companyId.ToString()}\")");
+                
+                // Si el Id del requerimiento de la traza está en la lista de requerimientos de la regulación sumamos 1
+                foreach (var trace in traces)
+                {
+                    if (requirements.Any(x => x.Id.Equals(trace.RequirementId)))
+                    {
+                        finishedRequirements += 1;
+                    }
+                }
+
+                if (totalRequirements == finishedRequirements)
+                {
+                    regulations.Add(regulation);
+                }
+            }
+
+            return Ok(regulations);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error obteniendo regulaciones con todas sus trazas");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    
 }

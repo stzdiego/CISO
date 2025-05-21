@@ -1,6 +1,7 @@
 ﻿@page "/Dashboard"
 @using CISO.AuditService.Shared.Entities
 @using CISO.CertificationService.Shared.Entities
+@using CISO.Shared.Frontend.Services
 @using STZ.Shared.Bases
 @using STZ.Shared.Entities
 @attribute [STZAuthorize("Dashboard")]
@@ -9,6 +10,7 @@
 @inject ServiceBase<Company> CompanyService
 @inject ServiceBase<Regulation> RegulationService
 @inject ServiceBase<RegulationCompany> RegulationCompanyService
+@inject CustomTraceService CustomTraceService
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -112,7 +114,7 @@ else
         _regulationCount = regulationCompanies.Count;
         
         // Get regulations finished
-        _regulationFinished = 0;
+        _regulationFinished = await CustomTraceService.GetRegulationsWithAllTracesAsync(_company);
         await InvokeAsync(StateHasChanged);
     }
 
